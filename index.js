@@ -1,7 +1,7 @@
 
 const redux = require('redux');
-
-const createStore = redux.legacy_createStore
+const createStore = redux.legacy_createStore;
+const combineReducers = redux.combineReducers;
 
 
 console.log('from index.js')
@@ -56,36 +56,52 @@ const initialStateIceCream = {
 }
 
 /*have a reducer for each state  */
-const cakeReducer = (state= initialStateCake, buyCake) => {
+const cakeReducer = (state= initialStateCake, action) => {
   switch (action.type) {
-
-  
     case BUY_CAKE: return {
       ...state,
       numOfCakes: state.numOfCakes - 1
       }
+      default: return state
 
     }
 }
 
-const iceCreamReducer = (state= initialStateIceCream, buyIceCream) => {
+const iceCreamReducer = (state= initialStateIceCream, action) => {
   switch (action.type) {
-
-  
     case BUY_ICECREAM: return {
       ...state,
       numOfIceCreams: state.numOfIceCreams - 1
       }
+      default: return state
+
 
     }
 }
 
 
 /*although we have separated the reducer function for each state, the 
-createStore() can only accept one reducer... */
+createStore() can only accept one reducer... 
+
+redux uses a method called combineReducers- uses combines multiple reducers into
+one, which can be passed to the createStore()
+
+before we create our store, we combine our reducers. */
+
+/*call the combination of all the reducers as rootReducers */
 
 
-const store = createStore(reducer)
+const rootReducers = combineReducers({
+  /*accepts an object- each key-value pair corresponds to a reducer*/
+  cake: cakeReducer,
+  iceCream: iceCreamReducer
+})
+/*now the createStore() will accept the rootReducer as its paramater */
+const store = createStore(rootReducers)
+
+/* now the global state has two nested objects, if you want to access the 
+numOfCakes it is state.cake.numOfCakes */
+
 console.log('initial state', store.getState())
 
 store.subscribe(() => console.log('updated state', store.getState()));
@@ -98,6 +114,8 @@ store.dispatch(buyCake())
 
 /*let's dispatch an action to buy an ice cream */
 store.dispatch(buyIceCream())
+store.dispatch(buyIceCream())
+
 
 console.log('current state', store.getState())
 
