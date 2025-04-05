@@ -1,4 +1,4 @@
-
+// exact copy as the latest file in 'TutorialVideo'
 const redux = require('redux');
 const createStore = redux.legacy_createStore;
 const combineReducers = redux.combineReducers;
