@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "redux": "^5.0.1"
+    "axios": "^0.26.0",
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.1"
   }
 }

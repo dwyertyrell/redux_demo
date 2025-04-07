@@ -1,23 +1,66 @@
 
-/*we are going to include middleware in our redux lifecycle 
-we are going to use the 'redux logger' library for the middleware functions
-for: logging; crash reporting; performing asynchronous tasks etc.. 
 
-let's create a logger for our application.
+/*asynchronous actions
 
-the logger middleware is not compatible with the legacy code.
-i need to change the legacy code(createStore()) with configureStore() and 
-continue from there */
+typically with data fetching, we use pre-defined properties for the (initial) 
+state.
+
+state {
+  loading: true, 
+  data: [],
+  errors: '' 
+  }
+
+  the loading flag (called flag as it's a boolean concept) can help display a 
+  loading spinner if your app has a UI (style in your component).
+
+  the data in this repo is a list of users from the fetch. the initial state 
+  is an empty array- as no users have been loaded yet.
+
+  the final property is an error message- in case the api request might fail.
+  instead of getting back the data, we get an error that is stored in the error 
+  property. this property can display an error to the user, if your 
+  application has a UI
+
+
+  Actions
+  we'll have 3 actions in our application.
+
+  FETCH_USERS_REQUESTED - fetch list of users
+  the 2nd and 3rd actions are dependent on the 1st one
+
+  FETCH_USERS_SUCCEEDED- fetched successfully 
+
+  FETCH_USERS_FAILED- if there's an error when fetching the data
+
+  Reducers
+  if (action.type) is:
+    case FETCH_USERS_REQUESTED: 
+      we set loading to true 
+
+    case FETCH_USERS_SUCCEEDED: 
+      we set loading to false
+      and set data to users (data from api)  
+
+    case FETCH_USERS_FAILED: 
+      we set loading to false 
+      set errors to equal the error.messgae from response object.
+
+create asyncActions.js for this new code 
+*/
+
+
+
+
+
 
 
 
 const redux = require('redux');
 // const reduxLogger = require('redux-logger');
 
-const createStore = redux.legacy_createStore;
+const createStore = redux.createStore;
 const combineReducers = redux.combineReducers;
-/*redux library gives us a function that is used to apply middleware 
-which can be passed in as a 2nd parameter in createStore()*/
 
 const applyMiddleware = redux.applyMiddleware();
 // const logger = reduxLogger.createLogger()
