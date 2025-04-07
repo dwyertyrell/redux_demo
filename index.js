@@ -1,8 +1,26 @@
-// exact copy as the latest file in 'TutorialVideo'
+
+/*we are going to include middleware in our redux lifecycle 
+we are going to use the 'redux logger' library for the middleware functions
+for: logging; crash reporting; performing asynchronous tasks etc.. 
+
+let's create a logger for our application.
+
+the logger middleware is not compatible with the legacy code.
+i need to change the legacy code(createStore()) with configureStore() and 
+continue from there */
+
+
+
 const redux = require('redux');
+// const reduxLogger = require('redux-logger');
+
 const createStore = redux.legacy_createStore;
 const combineReducers = redux.combineReducers;
+/*redux library gives us a function that is used to apply middleware 
+which can be passed in as a 2nd parameter in createStore()*/
 
+const applyMiddleware = redux.applyMiddleware();
+// const logger = reduxLogger.createLogger()
 
 console.log('from index.js')
 
@@ -43,10 +61,6 @@ function buyIceCream() {
 
 
 
-/*another approach of using multiple reducers 
-
-we are going to split our state and reducers */
-
 const initialStateCake = {
   numOfCakes: 10
 }
@@ -55,7 +69,6 @@ const initialStateIceCream = {
   numOfIceCreams: 20
 }
 
-/*have a reducer for each state  */
 const cakeReducer = (state= initialStateCake, action) => {
   switch (action.type) {
     case BUY_CAKE: return {
@@ -80,31 +93,22 @@ const iceCreamReducer = (state= initialStateIceCream, action) => {
 }
 
 
-/*although we have separated the reducer function for each state, the 
-createStore() can only accept one reducer... 
-
-redux uses a method called combineReducers- uses combines multiple reducers into
-one, which can be passed to the createStore()
-
-before we create our store, we combine our reducers. */
-
-/*call the combination of all the reducers as rootReducers */
-
-
 const rootReducers = combineReducers({
-  /*accepts an object- each key-value pair corresponds to a reducer*/
   cake: cakeReducer,
   iceCream: iceCreamReducer
 })
-/*now the createStore() will accept the rootReducer as its paramater */
+// const store = createStore(rootReducers, applyMiddleware(logger))
+// the logger middleware is not compatible with the legacy code. 
 const store = createStore(rootReducers)
 
-/* now the global state has two nested objects, if you want to access the 
-numOfCakes it is state.cake.numOfCakes */
+/*we can remove the console.log description of the store- since we have the 
+logger function to handle all of that. */
+
+
 
 console.log('initial state', store.getState())
-
-store.subscribe(() => console.log('updated state', store.getState()));
+/*console log is removed  */
+store.subscribe(() => {});
 
 
 store.dispatch(buyCake())
@@ -112,7 +116,6 @@ store.dispatch(buyCake())
 store.dispatch(buyCake())
 
 
-/*let's dispatch an action to buy an ice cream */
 store.dispatch(buyIceCream())
 store.dispatch(buyIceCream())
 
