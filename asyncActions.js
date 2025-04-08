@@ -8,6 +8,60 @@ const thunk = require('redux-thunk').default;
 
 
 
+/*asynchronous actions
+
+typically with data fetching, we use pre-defined properties for the (initial) 
+state.
+
+state {
+  loading: true, 
+  data: [],
+  errors: '' 
+  }
+
+  the loading flag (called flag as it's a boolean concept) can help display a 
+  loading spinner if your app has a UI (style in your component).
+
+  the data in this repo is a list of users from the fetch. the initial state 
+  is an empty array- as no users have been loaded yet.
+
+  the final property is an error message- in case the api request might fail.
+  instead of getting back the data, we get an error that is stored in the error 
+  property. this property can display an error to the user, if your 
+  application has a UI
+
+
+  Actions
+  we'll have 3 actions in our application.
+
+  FETCH_USERS_REQUESTED - fetch list of users
+  the 2nd and 3rd actions are dependent on the 1st one
+
+  FETCH_USERS_SUCCEEDED- fetched successfully 
+
+  FETCH_USERS_FAILED- if there's an error when fetching the data
+
+  Reducers
+  if (action.type) is:
+    case FETCH_USERS_REQUESTED: 
+      we set loading to true 
+
+    case FETCH_USERS_SUCCEEDED: 
+      we set loading to false
+      and set data to users (data from api)  
+
+    case FETCH_USERS_FAILED: 
+      we set loading to false 
+      set errors to equal the error.messgae from response object.
+
+create asyncActions.js for this new code 
+*/
+
+
+
+
+
+
 // in this file we need to define 3 things: the state; the actions; the reducer.
 
 //declaring the (initial) state
@@ -23,7 +77,8 @@ const FETCH_USERS_SUCCEEDED = 'FETCH_USERS_SUCCEEDED'
 const FETCH_USERS_FAILED = 'FETCH_USERS_FAILED'
 
 
-//define the action creators:
+//define the action creators:  
+
 //request to fethced the data
 const fetchUsersRequest = () => {
   return {
@@ -33,6 +88,8 @@ const fetchUsersRequest = () => {
 }
 
 //store the list of users if the fetch is successful
+/*the parameter inside these action creators are defined inside the code
+block it will be used in. in this case, in the async action creator*/
 const fetchUsersSuccess = (users) => {
   return {
   type: FETCH_USERS_SUCCEEDED,
@@ -41,7 +98,7 @@ const fetchUsersSuccess = (users) => {
 }
 
 //store the error message if the request failed.
-const fetchUsersFailure = error => {
+const fetchUsersFailure = (error) => {
   // return an object where the type is FETCH_USERS_FAILED and the payload is error 
   return {
     type: FETCH_USERS_FAILED,
@@ -107,26 +164,25 @@ actions.  */
 const fetchUsers = () => {
   /*before we call to api, we dispatch fetchUsersRequest(). this action creator
   will set loading to true */
-  store.dispatch(fetchUsersRequest);
+  store.dispatch(fetchUsersRequest());
 
   return (
     function(dispatch) {
-      
+      axios.get('https://jsonplaceholder.typicode.com/users').then((response) => {
+        const users = response.data.map((user) => user.id)
+        /* we dispacth an action that stores the fetched data in state */
+        store.dispatch(fetchUsersSuccess(users))
+      }).catch((error) => {
+        // error.message will be the value of the error state
+        store.dispatch(fetchUsersFailure(error.message))
+      })
 
-    axios.get('https://jsonplaceholder.typicode.com/users').then((response) => {
-      const users = response.data.map((user) => user.id)
-      /* we dispacth an action that stores the fetched data in state */
-      store.dispatch(fetchUsersSuccess(users))
-    }).catch((error) => {
-      // error.message will be the value of the error state
-      store.dispatch(fetchUsersFailure(error.message))
-    })
-
-  }
-)
+    }
+  )
 }
 
 /*now subscribe to store and dispatch this asyn action creator */
 
 store.subscribe(() => {console.log(store.getState())})
 store.dispatch(fetchUsers())
+// store.dispatch(fetchUsersRequest());
