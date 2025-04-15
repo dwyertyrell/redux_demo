@@ -1,61 +1,4 @@
 
-
-/*asynchronous actions
-
-typically with data fetching, we use pre-defined properties for the (initial) 
-state.
-
-state {
-  loading: true, 
-  data: [],
-  errors: '' 
-  }
-
-  the loading flag (called flag as it's a boolean concept) can help display a 
-  loading spinner if your app has a UI (style in your component).
-
-  the data in this repo is a list of users from the fetch. the initial state 
-  is an empty array- as no users have been loaded yet.
-
-  the final property is an error message- in case the api request might fail.
-  instead of getting back the data, we get an error that is stored in the error 
-  property. this property can display an error to the user, if your 
-  application has a UI
-
-
-  Actions
-  we'll have 3 actions in our application.
-
-  FETCH_USERS_REQUESTED - fetch list of users
-  the 2nd and 3rd actions are dependent on the 1st one
-
-  FETCH_USERS_SUCCEEDED- fetched successfully 
-
-  FETCH_USERS_FAILED- if there's an error when fetching the data
-
-  Reducers
-  if (action.type) is:
-    case FETCH_USERS_REQUESTED: 
-      we set loading to true 
-
-    case FETCH_USERS_SUCCEEDED: 
-      we set loading to false
-      and set data to users (data from api)  
-
-    case FETCH_USERS_FAILED: 
-      we set loading to false 
-      set errors to equal the error.messgae from response object.
-
-create asyncActions.js for this new code 
-*/
-
-
-
-
-
-
-
-
 const redux = require('redux');
 // const reduxLogger = require('redux-logger');
 
@@ -129,6 +72,11 @@ const iceCreamReducer = (state= initialStateIceCream, action) => {
       ...state,
       numOfIceCreams: state.numOfIceCreams - 1
       }
+    case BUY_CAKE:
+      return {
+        ...state,
+        numOfIceCreams: state.numOfIceCreams - 1
+      }
       default: return state
 
 
@@ -150,8 +98,8 @@ logger function to handle all of that. */
 
 
 console.log('initial state', store.getState())
-/*console log is removed  */
-store.subscribe(() => {});
+/*console log is removed if redux-looger is installed  */
+const unsubscribe = store.subscribe(() => {console.log('updated state', store.getState())});
 
 
 store.dispatch(buyCake())
@@ -159,20 +107,36 @@ store.dispatch(buyCake())
 store.dispatch(buyCake())
 
 
-store.dispatch(buyIceCream())
-store.dispatch(buyIceCream())
+// store.dispatch(buyIceCream())
+// store.dispatch(buyIceCream())
 
-
-console.log('current state', store.getState())
-
-
-const unsubscribe = store.subscribe(() => {
-  console.log('updated state', store.getState())
-});
+  
+// const unsubscribe = store.subscribe(() => {
+//   console.log('updated state', store.getState())
+// });
 
 unsubscribe();
 
-console.log('current state', store.getState())
 
 
+/* although there are separate reducers, when we dispatch an action both reducers
+recieve that action.
+one of them acts, and the other just ignores it.
+
+let's create an action: for every cake sold, we want to give one icecream for 
+free.
+solution: add a new case in iceCreamReducer, with the action type being a cake 
+constant.
+
+in conclusion, although iceCreamReducer can only update the num of Ice-creams, 
+it can still respond to the CAKE_ORDERED action type, if its being called.
+
+this does not happen in redux-toolkit.
+
+reducers from one createSlice() will only respond to the action types generated 
+from the same slice.
+if you want a slice to respond to other action types, despite the ones it created,
+we need to make use of extra reducers- additional reducers apart from the reducer 
+generated from createSlice()...check 'rtk-demo' folder
+*/
 
